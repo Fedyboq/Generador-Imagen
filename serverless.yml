@@ -1,11 +1,11 @@
-org: m4guiluch0
+org: federicoiribar
 service: diagrams-lambda
 provider:
   name: aws
   region: us-east-1
   timeout: 30
   iam:
-    role: arn:aws:iam::195602400559:role/LabRole
+    role: arn:aws:iam::183332844744:role/LabRole
 
   ecr:
     images:
