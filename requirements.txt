@@ -1,2 +1,3 @@
-diagrams
+eralchemy2
+sqlalchemy
 graphviz
