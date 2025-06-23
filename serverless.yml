@@ -1,22 +1,19 @@
 org: federicoiribar
 service: diagrams-lambda
+
 provider:
   name: aws
+  # Ya que usas contenedor, el runtime lo ignora
   region: us-east-1
-  timeout: 30
+  timeout: 29
   iam:
-    role: arn:aws:iam::183332844744:role/LabRole
+    role: arn:aws:iam::195602400559:role/LabRole
 
-  ecr:
-    images:
-      diagramscontainer:      # nombre en minúsculas y sin mayúsculas
-        path: .
 functions:
   api:
     image:
-      name: diagramscontainer
+      uri: 195602400559.dkr.ecr.us-east-1.amazonaws.com/sefedeam/gosip:latest
     events:
-      - httpApi:
-          path: /diagram
-          method: post   # <-- aquí lo cambias a POST
-
+      - http:
+          path: diagram
+          method: post
