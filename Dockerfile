@@ -1,43 +1,31 @@
-FROM amazonlinux:2
+FROM ubuntu:22.04
 
-# Instalar herramientas básicas
-RUN yum update -y && \
-    yum groupinstall -y "Development Tools" && \
-    yum install -y \
-        wget \
-        python3 \
-        python3-devel \
-        cairo-devel \
-        libtool \
-        libpng-devel \
-        libjpeg-devel \
-        pango-devel \
-        git \
-        pkgconfig \
-        freetype-devel
+# Configuración para evitar prompts
+ENV DEBIAN_FRONTEND=noninteractive
+ENV LANG C.UTF-8
+ENV LC_ALL C.UTF-8
 
-# Instalar pip
-RUN python3 -m ensurepip && pip3 install --upgrade pip
+# Instalar dependencias del sistema
+RUN apt-get update && apt-get install -y \
+    python3 python3-pip python3-dev \
+    build-essential \
+    graphviz libgraphviz-dev \
+    pkg-config curl unzip git \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Descargar y compilar Graphviz
-WORKDIR /opt
-RUN wget https://gitlab.com/api/v4/projects/4207231/packages/generic/graphviz-releases/2.49.3/graphviz-2.49.3.tar.gz && \
-    tar -xzf graphviz-2.49.3.tar.gz && \
-    cd graphviz-2.49.3 && \
-    ./configure && \
-    make && \
-    make install
+# Crear carpeta de trabajo
+WORKDIR /var/task
 
-# Configurar el path para Graphviz
-ENV PATH="/usr/local/bin:$PATH"
-ENV LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
+# Copiar dependencias
+COPY app/requirements.txt .
 
-# Instalar requirements
-COPY requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt
+# Instalar dependencias Python
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar código
-COPY lambda_function.py .
+# Copiar el código de Lambda
+COPY app/lambda_function.py .
 
-# Handler para Lambda
-CMD ["lambda_function.lambda_handler"]
+# Comando para Lambda (usa lambda_function.handler)
+CMD ["lambda_function.handler"]
+
